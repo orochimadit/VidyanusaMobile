@@ -11,6 +11,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.squareup.picasso.RequestHandler;
+
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
+
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText eEmail, ePassword;
@@ -43,7 +59,9 @@ public class LoginActivity extends AppCompatActivity {
         acceder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                iniciar();
+                userLogin();
+              //  iniciar();
+
             }
         });
     }
@@ -70,6 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         ePassword.getText().clear();
 
     }
+
     private boolean validar() {
         boolean valid = true;
 
@@ -91,5 +110,59 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+
+    private void userLogin(){
+        final String email = eEmail.getText().toString().trim();
+        final String password = ePassword.getText().toString().trim();
+        //progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constant.URL_LOGIN,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+          //              progressDialog.dismiss();
+                        try {
+                            JSONObject obj = new JSONObject(response);
+                            if(obj.getBoolean("success")){
+
+
+                                startActivity(new Intent(getApplicationContext(),DrawerActivity.class));
+                                finish();
+                            }
+                            else{
+                                Toast.makeText(getApplicationContext(),
+                                        obj.getString("success"),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        catch (JSONException e){
+                            e.printStackTrace();
+
+                        }
+
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(),
+                                error.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
+        ){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<>();
+                params.put("email",email);
+                params.put("sandi",password);
+
+                return params;
+            }
+        };
+
+        //RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
+        com.mikepenz.materialdrawer.app.RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
     }
 }
