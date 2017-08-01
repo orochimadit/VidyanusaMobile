@@ -18,7 +18,19 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Maycol Meza on 15/04/2017.
@@ -32,7 +44,7 @@ public class SignupActivity extends AppCompatActivity {
     private EditText nombre;
     private EditText email;
     private Button registrar;
-    private String sPassword, sNombre, sEmail;
+   // private String sPassword, sNombre, sEmail;
     private int request_code = 1;
     private Bitmap bitmap_foto;
     private RoundedBitmapDrawable roundedBitmapDrawable;
@@ -97,11 +109,43 @@ public class SignupActivity extends AppCompatActivity {
 
         if (!validar()) return;
 
-        sEmail = email.getText().toString();
-        sPassword = password.getText().toString();
-        sNombre = nombre.getText().toString();
+       final String sEmail = email.getText().toString().trim();
+        final String sPassword = password.getText().toString().trim();
+        final String sNombre = nombre.getText().toString().trim();
 
-        Intent intent =new Intent(getApplicationContext(),DrawerActivity.class);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constant.URL_REGISTER,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                      //  progressDialos.dismiss();
+                        try{
+                            JSONObject jsonObject = new JSONObject(response);
+                            Toast.makeText(getApplicationContext(),jsonObject.getString("message"),Toast.LENGTH_LONG).show();
+
+                        }
+                        catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+               // progressDialog.hide();
+                Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_LONG);
+            }
+        }
+        ){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<>();
+                params.put("username",sNombre);
+                params.put("email",sEmail);
+                params.put("password",sPassword);
+                return params;
+            }
+        };
+        RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
+        Intent intent =new Intent(getApplicationContext(),LoginActivity.class);
         intent.putExtra("IDENT",sEmail);
         startActivity(intent);
         finish();
