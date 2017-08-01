@@ -5,7 +5,7 @@ package com.mikepenz.materialdrawer.app;
  */
 
 public class Constant {
-    public static final String ROOT_URL ="http://172.20.28.212/bisa_dosen/v1/";
-    public static final String URL_LOGIN= ROOT_URL+"userLogin.php";
-    public static final String URL_UPDATE= ROOT_URL+"userUpdate.php";
+    public static final String ROOT_URL ="http://apigeneral.vidyanusa.id/";
+    public static final String URL_LOGIN= ROOT_URL+"masuk";
+    public static final String URL_REGISTER= ROOT_URL+"android/daftar/proses/siswa";
 }
