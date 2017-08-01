@@ -1,4 +1,4 @@
-package id.ac.uib.lecture;
+package com.mikepenz.materialdrawer.app;
 
 import android.content.Context;
 
