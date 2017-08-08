@@ -3,6 +3,7 @@ package com.mikepenz.materialdrawer.app;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,15 +17,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,12 +48,15 @@ public class SignupActivity extends AppCompatActivity {
     private EditText password;
     private EditText nombre;
     private EditText email;
+    private EditText username;
+    private RadioButton male;
+    private RadioButton female;
     private Button registrar;
-   // private String sPassword, sNombre, sEmail;
     private int request_code = 1;
     private Bitmap bitmap_foto;
     private RoundedBitmapDrawable roundedBitmapDrawable;
     private byte[] bytes;
+    private String sex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -60,6 +68,9 @@ public class SignupActivity extends AppCompatActivity {
         email = (EditText)findViewById(R.id.correo_registro);
         password = (EditText)findViewById(R.id.password_registro);
         nombre = (EditText)findViewById(R.id.nombre_registro);
+        username = (EditText)findViewById(R.id.username);
+        male = (RadioButton) findViewById(R.id.male);
+        female = (RadioButton) findViewById(R.id.female);
         registrar = (Button)findViewById(R.id.btn_registro_usuario);
         bitmap_foto = BitmapFactory.decodeResource(getResources(),R.drawable.logoprofile);
         roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap_foto);
@@ -69,7 +80,7 @@ public class SignupActivity extends AppCompatActivity {
         registrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                registrar();
+                userRegister(view);
             }
         });
 
@@ -105,13 +116,14 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    public void registrar() {
-
+    public void userRegister(View view) {
         if (!validar()) return;
 
-       final String sEmail = email.getText().toString().trim();
+        final String sEmail = email.getText().toString().trim();
         final String sPassword = password.getText().toString().trim();
         final String sNombre = nombre.getText().toString().trim();
+        final String sUsername = username.getText().toString().trim();
+        final String sSex = sex;
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Constant.URL_REGISTER,
                 new Response.Listener<String>() {
@@ -119,47 +131,61 @@ public class SignupActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                       //  progressDialos.dismiss();
                         try{
-                            JSONObject jsonObject = new JSONObject(response);
-                            Toast.makeText(getApplicationContext(),jsonObject.getString("message"),Toast.LENGTH_LONG).show();
+                            JSONObject obj = new JSONObject(response);
+                            JSONObject objData = new JSONObject(obj.getString("data"));
+                            if(obj.getBoolean("success")) {
+                                SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+                                SharedPreferences.Editor editor = pref.edit();
+                                editor.putString("access_token", objData.getString("access_token"));
+                                editor.putString("id_pengguna", objData.getString("id_pengguna"));
+                                editor.putString("username", objData.getString("username"));
+                                editor.putString("peran", objData.getString("peran"));
+                                editor.commit();
+                                Toast.makeText(getApplicationContext(), "Berhasil", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(getApplicationContext(),DrawerActivity.class));
+                                finish();
+                            }
+                            else{
+                                JSONArray arrFail = new JSONArray(obj.getString("data"));
+                                JSONObject objFail = arrFail.getJSONObject(0);
+                                Toast.makeText(getApplicationContext(),
+                                        objFail.getString("message"),
+                                        Toast.LENGTH_LONG).show();
+                            }
 
                         }
                         catch (JSONException e){
                             e.printStackTrace();
                         }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-               // progressDialog.hide();
-                Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_LONG);
-            }
+                },
+                new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                   // progressDialog.hide();
+                    Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_LONG);
+                }
         }
         ){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> params = new HashMap<>();
-                params.put("username",sNombre);
                 params.put("email",sEmail);
-                params.put("password",sPassword);
+                params.put("sandi",sPassword);
+                params.put("username",sUsername);
+                params.put("nama_lengkap",sNombre);
+                params.put("jenis_kelamin",sSex);
                 return params;
             }
         };
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
-        Intent intent =new Intent(getApplicationContext(),LoginActivity.class);
-        intent.putExtra("IDENT",sEmail);
-        startActivity(intent);
-        finish();
 
 //        final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
 //                R.style.MaterialTheme);
 //        progressDialog.setIndeterminate(true);
 //        progressDialog.setMessage("Creando cuenta...");
 //        progressDialog.show();
-
-
-        email.getText().clear();
-        password.getText().clear();
-        nombre.getText().clear();
     }
 
 
@@ -170,6 +196,7 @@ public class SignupActivity extends AppCompatActivity {
         String sNombre = nombre.getText().toString();
         String sPassword = password.getText().toString();
         String sEmail = email.getText().toString();
+        String sUsername = username.getText().toString();
 
         if (sNombre.isEmpty() || sNombre.length() < 3) {
             nombre.setError("Enter at least 3 characters");
@@ -185,11 +212,30 @@ public class SignupActivity extends AppCompatActivity {
             email.setError(null);
         }
 
-        if (sPassword.isEmpty() || password.length() < 4 || password.length() > 10) {
-            password.setError("Enter 4 - 10 characters");
+        if (sPassword.isEmpty() || password.length() < 4) {
+            password.setError("Enter at least 4 characters");
             valid = false;
         } else {
             password.setError(null);
+        }
+        if(sUsername.isEmpty() || username.length() < 4) {
+            username.setError("Enter at least 4 characters");
+            valid = false;
+        } else {
+            username.setError(null);
+        }
+        if(male.isChecked()) {
+            sex = "M";
+            male.setError(null);
+            female.setError(null);
+        } else if(female.isChecked()) {
+            sex = "F";
+            female.setError(null);
+            male.setError(null);
+        } else {
+            valid = false;
+            male.setError("Pilih salah satu");
+            female.setError("Pilih salah satu");
         }
 
         return valid;

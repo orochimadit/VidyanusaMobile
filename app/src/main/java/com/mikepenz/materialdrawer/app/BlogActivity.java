@@ -2,68 +2,96 @@ package com.mikepenz.materialdrawer.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextClock;
 
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
-import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.holder.BadgeStyle;
 import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DrawerActivity extends AppCompatActivity {
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+
+
+public class BlogActivity extends AppCompatActivity {
     private static final int PROFILE_SETTING = 100000;
 
-    //save our header or result
     private AccountHeader headerResult = null;
     private Drawer result = null;
+
+    private Spinner spjenis;
+    private Spinner spmapel;
+    private Spinner spkategori;
+    private EditText judul;
+    private EditText upload;
+    private EditText deskripsi;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_sample_actionbar);
-        setContentView(R.layout.activity_sample_dark_toolbar);
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
-        Log.d("log", pref.getString("access_token", null));
-
-        //Remove line to test RTL support
-        //getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-
+        setContentView(R.layout.blog);
         // Handle Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //List jenis postingan
+        spjenis = (Spinner) findViewById(R.id.spjenis);
+            List<String> item = new ArrayList<String>();
+                item.add("Sekolah/Umum");
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(BlogActivity.this,android.R.layout.simple_spinner_dropdown_item,
+                item);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spjenis.setAdapter(adapter);
 
-        // Create a few sample profile
-        // NOTE you have to define the loader logic too. See the CustomApplication for more details
+        //List jenis mapel
+        spmapel = (Spinner) findViewById(R.id.spmapel);
+            List<String> item2 = new ArrayList<String>();
+                item2.add("Mata Pelajaran");
+            ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(BlogActivity.this,android.R.layout.simple_spinner_dropdown_item,
+                    item2);
+            adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spmapel.setAdapter(adapter2);
+
+        //List jenis mapel
+        spkategori = (Spinner) findViewById(R.id.spkategori);
+            List<String> item3 = new ArrayList<String>();
+                item3.add("Kategori");
+            ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(BlogActivity.this,android.R.layout.simple_spinner_dropdown_item,
+                    item3);
+            adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spkategori.setAdapter(adapter3);
+
+
+
+
         final IProfile profile = new ProfileDrawerItem().withName("Mike Penz").withEmail("mikepenz@gmail.com").withIcon("https://avatars3.githubusercontent.com/u/1476232?v=3&s=460").withIdentifier(100);
-        /*final IProfile profile2 = new ProfileDrawerItem().withName("Demo User").withEmail("demo@github.com").withIcon("https://avatars2.githubusercontent.com/u/3597376?v=3&s=460").withIdentifier(101);
-        final IProfile profile3 = new ProfileDrawerItem().withName("Max Muster").withEmail("max.mustermann@gmail.com").withIcon(R.drawable.profile2).withIdentifier(102);
-        final IProfile profile4 = new ProfileDrawerItem().withName("Felix House").withEmail("felix.house@gmail.com").withIcon(R.drawable.profile3).withIdentifier(103);
-        final IProfile profile5 = new ProfileDrawerItem().withName("Mr. X").withEmail("mister.x.super@gmail.com").withIcon(R.drawable.profile4).withIdentifier(104);
-        final IProfile profile6 = new ProfileDrawerItem().withName("Batman").withEmail("batman@gmail.com").withIcon(R.drawable.profile5).withIdentifier(105);*/
 
         // Create the AccountHeader
         headerResult = new AccountHeaderBuilder()
@@ -132,23 +160,23 @@ public class DrawerActivity extends AppCompatActivity {
                         if (drawerItem != null) {
                             Intent intent = null;
                             if (drawerItem.getIdentifier() == 1) {
-                                intent = new Intent(DrawerActivity.this, PresensiActivity.class);
+                                intent = new Intent(BlogActivity.this, PresensiActivity.class);
                             } else if (drawerItem.getIdentifier() == 2) {
-                                intent = new Intent(DrawerActivity.this, RekapPresensiActivity.class);
+                                intent = new Intent(BlogActivity.this, RekapPresensiActivity.class);
                             } else if (drawerItem.getIdentifier() == 3) {
-                                intent = new Intent(DrawerActivity.this, BlogActivity.class);
+                                intent = new Intent(BlogActivity.this, BlogActivity.class);
                             } else if (drawerItem.getIdentifier() == 4) {
-                                intent = new Intent(DrawerActivity.this, AktivitasActivity.class);
+                                intent = new Intent(BlogActivity.this, AktivitasActivity.class);
                             } else if (drawerItem.getIdentifier() == 5) {
-                                intent = new Intent(DrawerActivity.this, PortalActivity.class);
+                                intent = new Intent(BlogActivity.this, PortalActivity.class);
                             } else if (drawerItem.getIdentifier() == 20) {
                                 intent = new LibsBuilder()
                                         .withFields(R.string.class.getFields())
                                         .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
-                                        .intent(DrawerActivity.this);
+                                        .intent(BlogActivity.this);
                             }
                             if (intent != null) {
-                                DrawerActivity.this.startActivity(intent);
+                                BlogActivity.this.startActivity(intent);
                             }
                         }
 
@@ -171,19 +199,6 @@ public class DrawerActivity extends AppCompatActivity {
 
         result.updateBadge(4, new StringHolder(10 + ""));
     }
-
-    /*
-    private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
-            if (drawerItem instanceof Nameable) {
-                Log.i("material-drawer", "DrawerItem: " + ((Nameable) drawerItem).getName() + " - toggleChecked: " + isChecked);
-            } else {
-                Log.i("material-drawer", "toggleChecked: " + isChecked);
-            }
-        }
-    };
-    */
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -237,5 +252,7 @@ public class DrawerActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 
 }

@@ -4,11 +4,6 @@
     <item
         android:id="@+id/menu_1"
         android:orderInCategory="1"
-        android:title="Fragment 1"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_2"
-        android:orderInCategory="1"
-        android:title="Fragment 2"
+        android:title="Logout"
         app:showAsAction="never" />
 </menu>

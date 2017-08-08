@@ -1,5 +1,6 @@
 package com.mikepenz.materialdrawer.app;
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -113,6 +115,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void userLogin(){
+        if (!validar()) return;
         final String email = eEmail.getText().toString().trim();
         final String password = ePassword.getText().toString().trim();
         //progressDialog.show();
@@ -123,15 +126,22 @@ public class LoginActivity extends AppCompatActivity {
           //              progressDialog.dismiss();
                         try {
                             JSONObject obj = new JSONObject(response);
+                            JSONObject objData = new JSONObject(obj.getString("data"));
                             if(obj.getBoolean("success")){
-
-
+                                SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+                                SharedPreferences.Editor editor = pref.edit();
+                                editor.putString("access_token", objData.getString("access_token"));
+                                editor.putString("id_pengguna", objData.getString("id_pengguna"));
+                                editor.putString("username", objData.getString("username"));
+                                editor.putString("peran", objData.getString("peran"));
+                                editor.commit();
+                                Toast.makeText(getApplicationContext(), "Berhasil", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(),DrawerActivity.class));
                                 finish();
                             }
                             else{
                                 Toast.makeText(getApplicationContext(),
-                                        obj.getString("success"),
+                                        objData.getString("message"),
                                         Toast.LENGTH_LONG).show();
                             }
                         }
@@ -163,6 +173,7 @@ public class LoginActivity extends AppCompatActivity {
         };
 
         //RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         com.mikepenz.materialdrawer.app.RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
     }
 }

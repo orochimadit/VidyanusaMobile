@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="25dp">
+
+        <Spinner
+            android:id="@+id/spjenis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sekolah/Umum"/>
+
+        <Spinner
+            android:id="@+id/spmapel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mata Pelajaran"/>
+
+        <Spinner
+            android:id="@+id/spkategori"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kategori"/>
+
+        <EditText
+            android:id="@+id/etjudul"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Judul"/>
+
+
+        <EditText
+            android:id="@+id/etupload"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Upload"/>
+
+        <EditText
+            android:id="@+id/etdeskripsi"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:inputType="text|textMultiLine"
+            android:layout_marginTop="8dp"
+            android:hint="Deskripsi"/>
+
+        <Button
+            android:id="@+id/buttonsubmit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_marginTop="24dp"
+            android:onClick="ingresar"
+            android:text="Kirim" />
+
+    </LinearLayout>
+
+</LinearLayout>
+
+
+

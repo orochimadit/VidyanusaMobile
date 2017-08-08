@@ -2,6 +2,7 @@
     package="com.mikepenz.materialdrawer.app">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:name=".CustomApplication"
@@ -19,11 +20,31 @@
             </intent-filter>
         </activity>
         <activity
-        android:name=".DrawerActivity"
-        android:theme="@style/MaterialDrawerTheme" />
+            android:name=".DrawerActivity"
+            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar" />
         <activity
             android:name=".SignupActivity"
             android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar" />
+        <activity
+            android:name=".PresensiActivity"
+            android:label="@string/app_name"
+            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar"/>
+        <activity
+            android:name=".RekapPresensiActivity"
+            android:label="@string/app_name"
+            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar"/>
+        <activity
+            android:name=".BlogActivity"
+            android:label="@string/app_name"
+            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar"/>
+        <activity
+            android:name=".AktivitasActivity"
+            android:label="@string/app_name"
+            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar"/>
+        <activity
+            android:name=".PortalActivity"
+            android:label="@string/app_name"
+            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar"/>
         <activity
             android:name=".CompactHeaderDrawerActivity"
             android:label="@string/app_name"
